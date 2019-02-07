@@ -7,12 +7,25 @@ use Slim\Container;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+
+/**
+ * Resolve Configuration Variables
+ */
+$configPath = __DIR__ . '/Config.php';
+
+if (file_exists($configPath) && is_readable($configPath)) {
+    $config = include_once __DIR__ . '/Config.php';
+} else {
+    $config = [
+        'STEAM_API' => getenv('STEAM_API'),
+        'HERO_PATH' => getenv('HERO_PATH')
+    ];
+}
+
 /**
  * Create Dependencies
  */
-$container = new Container();
-$config    = include_once __DIR__ . '/Config.php';
-
+$container  = new Container();
 $createDependencies = include_once __DIR__ . '/Dependencies.php';
 $dependencies       = $createDependencies($config);
 

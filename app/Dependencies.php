@@ -12,7 +12,7 @@ use App\Services\OpenDota;
 return function (array $config) {
     return [
         'heroDict' => function () use ($config) {
-            $heroDict = file_get_contents($config['paths']['heroDict']);
+            $heroDict = file_get_contents($config['HERO_PATH']);
             return json_decode($heroDict, true);
         },
 
