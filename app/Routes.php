@@ -6,5 +6,8 @@ return [
     '/storeAPI/{command}/'                   => [['GET'], 'App\Controllers\SteamController:storeCall'],
 
     /** OpenDota Endpoints */
-    '/players/{account_id}/[{option}]'       => [['GET'], 'App\Controllers\DotaController::players'],
+    '/openDota/{interface}[/{identifier}[/{option}]]' => [['GET'], 'App\Controllers\OpenDotaController:apiCall'],
+
+    /** Application Endpoints */
+    '/app/getDotaPlayer/{steam_id}' => [['GET'], 'App\Controllers\AppController:getDotaPlayer']
 ];

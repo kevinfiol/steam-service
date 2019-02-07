@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Slim\Http\Response;
+use Psr\Http\Message\ResponseInterface as Response;
 
 use App\Services\Steam;
 
@@ -16,7 +16,7 @@ class SteamController
         $this->steam = $steam;
     }
 
-    public function apiCall(Request $req, Response $res, array $args)
+    public function apiCall(Request $req, Response $res, array $args): Response
     {
         $params = $req->getQueryParams();
         ['iface' => $iface, 'command' => $command, 'version' => $version] = $args;
@@ -30,9 +30,9 @@ class SteamController
         }
     }
 
-    public function storeCall(Request $req, Response $res, array $args)
+    public function storeCall(Request $req, Response $res, array $args): Response
     {
-        $params = $req->getQueryParams();
+        $params  = $req->getQueryParams();
         $command = $args['command'];
 
         try {
