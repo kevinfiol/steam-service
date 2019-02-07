@@ -1,0 +1,4 @@
+.vscode/
+vendor/
+app/Config.php
+yarn-error.log
