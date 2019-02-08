@@ -25,7 +25,7 @@ if (file_exists($configPath) && is_readable($configPath)) {
 /**
  * Create Dependencies
  */
-$container  = new Container();
+$container          = new Container();
 $createDependencies = include_once __DIR__ . '/Dependencies.php';
 $dependencies       = $createDependencies($config);
 
