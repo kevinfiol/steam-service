@@ -10,6 +10,7 @@ use App\Controllers\OpenDotaController;
 
 use App\Services\Steam;
 use App\Services\OpenDota;
+use App\Handlers\ErrorHandler;
 
 return function (array $config) {
     return [
@@ -57,12 +58,17 @@ return function (array $config) {
 
         'logger' => function () {
             $logger  = new Logger('steam-service_logger');
-            $logHandler = new StreamHandler('/../logs/steam-service.log');
+            $logHandler = new StreamHandler(__DIR__ . '/../logs/steam-service.log');
             $stdHandler = new StreamHandler('php://stderr');
 
             $logger->pushHandler($logHandler);
             $logger->pushHandler($stdHandler);
             return $logger;
+        },
+
+        'errorHandler' => function ($c) {
+            $logger = $c->get('logger');
+            return new ErrorHandler($logger);
         }
     ];
 };
