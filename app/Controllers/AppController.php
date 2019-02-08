@@ -12,12 +12,13 @@ class AppController
 {
     private $steam;
     private $dota;
-    // private $heroDict;
+    private $heroDict;
 
-    public function __construct(Steam $steam, OpenDota $dota)
+    public function __construct(Steam $steam, OpenDota $dota, array $heroDict)
     {
         $this->steam    = $steam;
         $this->dota     = $dota;
+        $this->heroDict = $heroDict;
     }
 
     public function getDotaPlayer(Request $req, Response $res, array $args): Response
@@ -27,33 +28,32 @@ class AppController
 
             // If Vanity ID, resolve Steam 64 ID
             if (!is_numeric($steam_id)) $steam_id = $this->resolveVanityUrl($steam_id);
-            $foo = bcadd('1111111', '222222');
-            // $steam32_id = $this->convertId('to32', $steam_id);
+            $steam32_id = $this->convertId('to32', $steam_id);
             
-            // $player = json_decode($this->dota->apiCall('players', $steam32_id), true);
-            // $totals = json_decode($this->dota->apiCall('players', $steam32_id, 'totals'), true);
-            // $heroes = json_decode($this->dota->apiCall('players', $steam32_id, 'heroes'), true);
+            $player = json_decode($this->dota->apiCall('players', $steam32_id), true);
+            $totals = json_decode($this->dota->apiCall('players', $steam32_id, 'totals'), true);
+            $heroes = json_decode($this->dota->apiCall('players', $steam32_id, 'heroes'), true);
 
             // Transform Totals
-            // $totals = array_reduce($totals, function ($acc, $x) {
-            //     $acc[ $x['field'] ] = $x;
-            //     return $acc;
-            // }, []);
+            $totals = array_reduce($totals, function ($acc, $x) {
+                $acc[ $x['field'] ] = $x;
+                return $acc;
+            }, []);
 
-            // // Get Top 5 from $heroes
-            // $heroes = array_map(function ($i) use ($heroes) {
-            //     return $heroes[$i];
-            // }, [0, 1, 2, 3, 4]);
+            // Get Top 5 from $heroes
+            $heroes = array_map(function ($i) use ($heroes) {
+                return $heroes[$i];
+            }, [0, 1, 2, 3, 4]);
 
-            // // Append properties from Heroes Dictionary
-            // $heroes = array_map(function ($hero) {
-            //     return array_merge($hero, $this->heroDict[$hero['hero_id']]);
-            // }, $heroes);
+            // Append properties from Heroes Dictionary
+            $heroes = array_map(function ($hero) {
+                return array_merge($hero, $this->heroDict[$hero['hero_id']]);
+            }, $heroes);
 
             return $res->withJson([
-                'player' => [],
-                'totals' => [],
-                'heroes' => []
+                'player' => $player,
+                'totals' => $totals,
+                'heroes' => $heroes
             ]);
         } catch (\Exception $e) {
             $code = $e->getCode();

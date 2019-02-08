@@ -15,8 +15,8 @@ use App\Handlers\ErrorHandler;
 return function (array $config) {
     return [
         'heroDict' => function () {
-            // $heroDict = file_get_contents('/heroes.json');
-            return json_decode(['who' => 'cares'], true);
+            $heroDict = file_get_contents(__DIR__ . '/../data/heroes.json');
+            return json_decode($heroDict, true);
         },
 
         'GuzzleHttp\Client' => function () {
@@ -36,7 +36,8 @@ return function (array $config) {
         'App\Controllers\AppController' => function ($c) {
             $dota   = $c->get('App\Services\OpenDota');
             $steam  = $c->get('App\Services\Steam');
-            return new AppController($steam, $dota);
+            $heroDict = $c->get('heroDict');
+            return new AppController($steam, $dota, $heroDict);
         },
 
         'App\Controllers\SteamController' => function ($c) {
@@ -59,7 +60,7 @@ return function (array $config) {
             $logger  = new Logger('steam-service_logger');
             $logHandler = new StreamHandler(__DIR__ . '/../logs/steam-service.log', Logger::WARNING);
 
-            $logger->pushHandler($logHandler, Logger::DEBUG);
+            $logger->pushHandler($logHandler);
             return $logger;
         },
 
