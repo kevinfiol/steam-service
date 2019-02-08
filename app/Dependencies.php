@@ -15,13 +15,11 @@ use App\Handlers\ErrorHandler;
 return function (array $config) {
     return [
         'heroDict' => function () {
-            if (file_exists(__DIR__ . '/../data/heroes.json')) {
-                error_log('heroes.json YES found');
+            if (file_exists(__DIR__ . '/../dafta/heroes.json')) {
                 $heroDict = file_get_contents(__DIR__ . '/../data/heroes.json');
                 return json_decode($heroDict, true);
             }
 
-            error_log('heroes.json not found');
             throw new \Exception('File not found.');
         },
 
