@@ -60,7 +60,7 @@ return function (array $config) {
             $logger  = new Logger('steam-service_logger');
             $logHandler = new StreamHandler(__DIR__ . '/../logs/steam-service.log', Logger::WARNING);
 
-            $logger->pushHandler($logHandler, Logger::WARNING);
+            $logger->pushHandler($logHandler, Logger::DEBUG);
             return $logger;
         },
 
