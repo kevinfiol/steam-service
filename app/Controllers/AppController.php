@@ -29,15 +29,15 @@ class AppController
             if (!is_numeric($steam_id)) $steam_id = $this->resolveVanityUrl($steam_id);
             $steam32_id = $this->convertId('to32', $steam_id);
             
-            $player = json_decode($this->dota->apiCall('players', $steam32_id), true);
-            $totals = json_decode($this->dota->apiCall('players', $steam32_id, 'totals'), true);
+            // $player = json_decode($this->dota->apiCall('players', $steam32_id), true);
+            // $totals = json_decode($this->dota->apiCall('players', $steam32_id, 'totals'), true);
             // $heroes = json_decode($this->dota->apiCall('players', $steam32_id, 'heroes'), true);
 
             // Transform Totals
-            $totals = array_reduce($totals, function ($acc, $x) {
-                $acc[ $x['field'] ] = $x;
-                return $acc;
-            }, []);
+            // $totals = array_reduce($totals, function ($acc, $x) {
+            //     $acc[ $x['field'] ] = $x;
+            //     return $acc;
+            // }, []);
 
             // // Get Top 5 from $heroes
             // $heroes = array_map(function ($i) use ($heroes) {
@@ -50,8 +50,8 @@ class AppController
             // }, $heroes);
 
             return $res->withJson([
-                'player' => $player,
-                'totals' => $totals
+                'player' => $steam_id,
+                'totals' => $steam32_id
                 // 'heroes' => $heroes
             ]);
         } catch (\Exception $e) {
