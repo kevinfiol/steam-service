@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2032b4db80f2ef7d04dd757fe98f01d6",
+    "content-hash": "cf36199209cf0e394e1d6d80983bfd4e",
     "packages": [
         {
             "name": "container-interop/container-interop",
@@ -1749,6 +1749,8 @@
     "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "ext-bcmath": "*"
+    },
     "platform-dev": []
 }

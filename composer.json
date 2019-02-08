@@ -6,7 +6,8 @@
     "require": {
         "slim/slim": "^3.12",
         "guzzlehttp/guzzle": "^6.3",
-        "monolog/monolog": "^1.24"
+        "monolog/monolog": "^1.24",
+        "ext-bcmath": "*"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.4",
