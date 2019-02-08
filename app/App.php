@@ -5,7 +5,8 @@ namespace App;
 use Slim\App;
 use Slim\Container;
 
-error_reporting(E_ERROR | E_WARNING);
+error_reporting(E_ALL);
+ini_set("display_errors", 1);
 require_once __DIR__ . '/../vendor/autoload.php';
 error_log("hello, this is a test!");
 
