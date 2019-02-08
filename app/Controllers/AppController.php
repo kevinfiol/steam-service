@@ -24,21 +24,21 @@ class AppController
     public function getDotaPlayer(Request $req, Response $res, array $args): Response
     {
         try {
-            $steam_id = $args['steam_id'];
+            // $steam_id = $args['steam_id'];
 
-            // If Vanity ID, resolve Steam 64 ID
-            if (!is_numeric($steam_id)) $steam_id = $this->resolveVanityUrl($steam_id);
-            $steam32_id = $this->convertId('to32', $steam_id);
+            // // If Vanity ID, resolve Steam 64 ID
+            // if (!is_numeric($steam_id)) $steam_id = $this->resolveVanityUrl($steam_id);
+            // $steam32_id = $this->convertId('to32', $steam_id);
             
-            $player = json_decode($this->dota->apiCall('players', $steam32_id), true);
-            $totals = json_decode($this->dota->apiCall('players', $steam32_id, 'totals'), true);
-            // $heroes = json_decode($this->dota->apiCall('players', $steam32_id, 'heroes'), true);
+            // $player = json_decode($this->dota->apiCall('players', $steam32_id), true);
+            // $totals = json_decode($this->dota->apiCall('players', $steam32_id, 'totals'), true);
+            // // $heroes = json_decode($this->dota->apiCall('players', $steam32_id, 'heroes'), true);
 
-            // Transform Totals
-            $totals = array_reduce($totals, function ($acc, $x) {
-                $acc[ $x['field'] ] = $x;
-                return $acc;
-            }, []);
+            // // Transform Totals
+            // $totals = array_reduce($totals, function ($acc, $x) {
+            //     $acc[ $x['field'] ] = $x;
+            //     return $acc;
+            // }, []);
 
             // // Get Top 5 from $heroes
             // $heroes = array_map(function ($i) use ($heroes) {
@@ -51,9 +51,7 @@ class AppController
             // }, $heroes);
 
             return $res->withJson([
-                'player' => $player,
-                'totals' => $totals,
-                'heroes' => []
+                'heroes' => 'fuckyou'
             ]);
         } catch (\Exception $e) {
             $code = $e->getCode();
