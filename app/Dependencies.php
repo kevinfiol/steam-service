@@ -58,9 +58,9 @@ return function (array $config) {
 
         'logger' => function () {
             $logger  = new Logger('steam-service_logger');
-            $stdHandler = new StreamHandler('php://stderr', Logger::WARNING);
+            $logHandler = new StreamHandler(__DIR__ . '/../logs/steam-service.log', Logger::WARNING);
 
-            $logger->pushHandler($stdHandler);
+            $logger->pushHandler($logHandler, Logger::WARNING);
             return $logger;
         },
 
