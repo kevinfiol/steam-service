@@ -27,7 +27,8 @@ class AppController
 
             // If Vanity ID, resolve Steam 64 ID
             if (!is_numeric($steam_id)) $steam_id = $this->resolveVanityUrl($steam_id);
-            $steam32_id = $this->convertId('to32', $steam_id);
+            $foo = bcadd('1111111', '222222');
+            // $steam32_id = $this->convertId('to32', $steam_id);
             
             // $player = json_decode($this->dota->apiCall('players', $steam32_id), true);
             // $totals = json_decode($this->dota->apiCall('players', $steam32_id, 'totals'), true);
