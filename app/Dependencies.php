@@ -15,7 +15,12 @@ use App\Handlers\ErrorHandler;
 return function (array $config) {
     return [
         'heroDict' => function () {
-            $heroDict = file_get_contents(__DIR__ . '/../data/heroes.json');
+            try {
+                $heroDict = file_get_contents(__DIR__ . '/../data/heroes.json');
+            } catch (\Exception $e) {
+                error_log('couldnt load the dict');
+            }
+
             return json_decode($heroDict, true);
         },
 
