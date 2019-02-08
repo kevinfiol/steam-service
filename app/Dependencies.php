@@ -15,8 +15,14 @@ use App\Handlers\ErrorHandler;
 return function (array $config) {
     return [
         'heroDict' => function () {
-            $heroDict = file_get_contents(__DIR__ . '/../data/heroes.json');
-            return json_decode($heroDict, true);
+            if (file_exists(__DIR__ . '/../data/heroes.json')) {
+                error_log('heroes.json YES found');
+                $heroDict = file_get_contents();
+                return json_decode($heroDict, true);
+            }
+
+            error_log('heroes.json not found');
+            throw new \Exception('File not found.');
         },
 
         'GuzzleHttp\Client' => function () {
@@ -65,11 +71,6 @@ return function (array $config) {
         },
 
         'errorHandler' => function ($c) {
-            $logger = $c->get('logger');
-            return new ErrorHandler($logger);
-        },
-        
-        'phpErrorHandler' => function ($c) {
             $logger = $c->get('logger');
             return new ErrorHandler($logger);
         }
