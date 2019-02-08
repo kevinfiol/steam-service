@@ -10,13 +10,12 @@ use App\Services\OpenDota;
 
 class AppController
 {
-    private $steam;
     private $dota;
     // private $heroDict;
 
-    public function __construct(Steam $steam, OpenDota $dota)
+    public function __construct(OpenDota $dota)
     {
-        $this->steam    = $steam;
+        // $this->steam    = $steam;
         $this->dota     = $dota;
     }
 
