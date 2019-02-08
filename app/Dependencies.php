@@ -1,6 +1,8 @@
 <?php declare(strict_types = 1);
 
 use GuzzleHttp\Client;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 
 use App\Controllers\AppController;
 use App\Controllers\SteamController;
@@ -51,6 +53,16 @@ return function (array $config) {
             return function ($req, $res) {
                 return $res->withStatus(404)->withJson(['error' => 'Endpoint does not exist']);
             };
+        },
+
+        'logger' => function () {
+            $logger  = new Logger('steam-service_logger');
+            $logHandler = new StreamHandler('/../logs/steam-service.log');
+            $stdHandler = new StreamHandler('php://stderr');
+
+            $logger->pushHandler($logHandler);
+            $logger->pushHandler($stdHandler);
+            return $logger;
         }
     ];
 };
