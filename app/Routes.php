@@ -9,5 +9,5 @@ return [
     '/openDota/{interface}[/{identifier}[/{option}]]' => [['GET'], 'App\Controllers\OpenDotaController:apiCall'],
 
     /** Application Endpoints */
-    '/app/getDotaPlayer/{steam_id}' => [['GET'], 'App\Controllers\AppController:getDotaPlayer']
+    '/app/getDotaPlayer/' => [['GET'], 'App\Controllers\AppController:getDotaPlayer']
 ];

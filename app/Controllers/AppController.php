@@ -23,40 +23,9 @@ class AppController
 
     public function getDotaPlayer(Request $req, Response $res, array $args): Response
     {
-        try {
-            // $steam_id = $args['steam_id'];
-
-            // // If Vanity ID, resolve Steam 64 ID
-            // if (!is_numeric($steam_id)) $steam_id = $this->resolveVanityUrl($steam_id);
-            // $steam32_id = $this->convertId('to32', $steam_id);
-            
-            // $player = json_decode($this->dota->apiCall('players', $steam32_id), true);
-            // $totals = json_decode($this->dota->apiCall('players', $steam32_id, 'totals'), true);
-            // // $heroes = json_decode($this->dota->apiCall('players', $steam32_id, 'heroes'), true);
-
-            // // Transform Totals
-            // $totals = array_reduce($totals, function ($acc, $x) {
-            //     $acc[ $x['field'] ] = $x;
-            //     return $acc;
-            // }, []);
-
-            // // Get Top 5 from $heroes
-            // $heroes = array_map(function ($i) use ($heroes) {
-            //     return $heroes[$i];
-            // }, [0, 1, 2, 3, 4]);
-
-            // // Append properties from Heroes Dictionary
-            // $heroes = array_map(function ($hero) {
-            //     return array_merge($hero, $this->heroDict[$hero['hero_id']]);
-            // }, $heroes);
-
-            return $res->withJson([
-                'heroes' => 'fuckyou'
-            ]);
-        } catch (\Exception $e) {
-            $code = $e->getCode();
-            return $res->withStatus($code)->withJson(['error' => $code]);
-        }
+        return $res->withJson([
+            'heroes' => 'fuckyou'
+        ]);
     }
 
     private function resolveVanityUrl(string $steam_id): string
