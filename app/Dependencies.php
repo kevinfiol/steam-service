@@ -14,8 +14,8 @@ use App\Handlers\ErrorHandler;
 
 return function (array $config) {
     return [
-        'heroDict' => function () use ($config) {
-            $heroDict = file_get_contents($config['HERO_PATH']);
+        'heroDict' => function () {
+            $heroDict = file_get_contents(__DIR__ . '/../data/heroes.json');
             return json_decode($heroDict, true);
         },
 
