@@ -58,10 +58,8 @@ return function (array $config) {
 
         'logger' => function () {
             $logger  = new Logger('steam-service_logger');
-            $logHandler = new StreamHandler(__DIR__ . '/../logs/steam-service.log');
-            $stdHandler = new StreamHandler('php://stderr');
+            $stdHandler = new StreamHandler('php://stderr', Logger::WARNING);
 
-            $logger->pushHandler($logHandler);
             $logger->pushHandler($stdHandler);
             return $logger;
         },
