@@ -34,7 +34,9 @@ return function (array $config) {
         },
 
         'App\Controllers\AppController' => function ($c) {
-            return new AppController();
+            $dota   = $c->get('App\Services\OpenDota');
+            $steam  = $c->get('App\Services\Steam');
+            return new AppController($steam, $dota);
         },
 
         'App\Controllers\SteamController' => function ($c) {
