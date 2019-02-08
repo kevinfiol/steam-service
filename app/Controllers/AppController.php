@@ -11,13 +11,13 @@ use App\Services\OpenDota;
 class AppController
 {
     private $steam;
-    // private $dota;
+    private $dota;
     // private $heroDict;
 
-    public function __construct(Steam $steam)
+    public function __construct(Steam $steam, OpenDota $dota)
     {
         $this->steam    = $steam;
-        // $this->dota     = $dota;
+        $this->dota     = $dota;
     }
 
     public function getDotaPlayer(Request $req, Response $res, array $args): Response
