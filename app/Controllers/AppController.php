@@ -22,7 +22,7 @@ class AppController
 
     public function getDotaPlayer(Request $req, Response $res, array $args): Response
     {
-        return $res->withStatus(200)->write('hello world');
+        return $res->withStatus(200)->write($args['steam_id']);
         // try {
         //     $steam_id = $args['steam_id'];
 
