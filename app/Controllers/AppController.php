@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
+use Slim\Http\Response;
 
 use App\Services\Steam;
 use App\Services\OpenDota;
@@ -24,7 +24,7 @@ class AppController
     public function getDotaPlayer(Request $req, Response $res, array $args): Response
     {
         try {
-            $steam_id = $args['steam_id'];
+            $steam_id = strval($args['steam_id']);
 
             // If Vanity ID, resolve Steam 64 ID
             if (!is_numeric($steam_id)) $steam_id = $this->resolveVanityUrl($steam_id);

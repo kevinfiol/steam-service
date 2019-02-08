@@ -14,9 +14,16 @@ use App\Handlers\ErrorHandler;
 
 return function (array $config) {
     return [
-        'heroDict' => function () {
-            $heroDict = file_get_contents(__DIR__ . '/../data/heroes.json');
-            return json_decode($heroDict, true);
+        'heroDict' => function () use ($config) {
+            $path = __DIR__ . $config['HERO_PATH'];
+
+            if (file_exists($path) && is_readable($path)) {
+                $heroDict = file_get_contents($path);
+                if (!$heroDict) throw new \Exception('Cannot read file contents.');
+                return json_decode($heroDict, true);
+            } else {
+                throw new \Exception('Heroes JSON cannot be found!');
+            }
         },
 
         'GuzzleHttp\Client' => function () {
@@ -56,11 +63,10 @@ return function (array $config) {
             };
         },
 
-        'logger' => function () {
+        'logger' => function () use ($config) {
             $logger  = new Logger('steam-service_logger');
-            $logHandler = new StreamHandler(__DIR__ . '/../logs/steam-service.log', Logger::WARNING);
-
-            $logger->pushHandler($logHandler);
+            $handler = new StreamHandler(__DIR__ . $config['LOGS_PATH'], Logger::WARNING);
+            $logger->pushHandler($handler);
             return $logger;
         },
 

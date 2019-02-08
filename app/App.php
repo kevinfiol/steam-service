@@ -17,6 +17,8 @@ if (file_exists($configPath) && is_readable($configPath)) {
 } else {
     $config = [
         'STEAM_API' => getenv('STEAM_API'),
+        'HERO_PATH' => getenv('HERO_PATH'),
+        'LOGS_PATH' => getenv('LOG_PATH')
     ];
 }
 

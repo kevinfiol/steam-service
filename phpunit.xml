@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit colors="true">
     <testsuites>
-        <testsuite name="SEDREF Query Test Suite">
+        <testsuite name="steam-service test suite">
             <directory>/tests/</directory>
         </testsuite>
     </testsuites>
