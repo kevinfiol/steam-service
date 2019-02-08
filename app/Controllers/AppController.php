@@ -49,11 +49,13 @@ class AppController
             //     return array_merge($hero, $this->heroDict[$hero['hero_id']]);
             // }, $heroes);
 
-            return $res->withJson([
-                'player' => $steam_id,
-                'totals' => $steam32_id
-                // 'heroes' => $heroes
-            ]);
+            return $res->withHeader('Content-type', 'application/json')->write(json_encode(['hello' => $steam32_id]));
+
+            // return $res->withStatuswithJson([
+            //     'player' => $steam_id,
+            //     'totals' => $steam32_id
+            //     // 'heroes' => $heroes
+            // ]);
         } catch (\Exception $e) {
             $code = $e->getCode();
             return $res->withStatus($code)->withJson(['error' => $code]);
