@@ -23,9 +23,7 @@ class AppController
 
     public function getDotaPlayer(Request $req, Response $res, array $args): Response
     {
-        return $res->withJson([
-            'heroes' => 'fuckyou'
-        ]);
+        return $res->withStatus(200)->write('hello world');
     }
 
     private function resolveVanityUrl(string $steam_id): string
