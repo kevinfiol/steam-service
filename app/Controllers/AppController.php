@@ -32,7 +32,7 @@ class AppController
             
             $player = json_decode($this->dota->apiCall('players', $steam32_id), true);
             $totals = json_decode($this->dota->apiCall('players', $steam32_id, 'totals'), true);
-            $heroes = json_decode($this->dota->apiCall('players', $steam32_id, 'heroes'), true);
+            // $heroes = json_decode($this->dota->apiCall('players', $steam32_id, 'heroes'), true);
 
             // Transform Totals
             $totals = array_reduce($totals, function ($acc, $x) {
@@ -40,20 +40,20 @@ class AppController
                 return $acc;
             }, []);
 
-            // Get Top 5 from $heroes
-            $heroes = array_map(function ($i) use ($heroes) {
-                return $heroes[$i];
-            }, [0, 1, 2, 3, 4]);
+            // // Get Top 5 from $heroes
+            // $heroes = array_map(function ($i) use ($heroes) {
+            //     return $heroes[$i];
+            // }, [0, 1, 2, 3, 4]);
 
-            // Append properties from Heroes Dictionary
-            $heroes = array_map(function ($hero) {
-                return array_merge($hero, $this->heroDict[$hero['hero_id']]);
-            }, $heroes);
+            // // Append properties from Heroes Dictionary
+            // $heroes = array_map(function ($hero) {
+            //     return array_merge($hero, $this->heroDict[$hero['hero_id']]);
+            // }, $heroes);
 
             return $res->withJson([
                 'player' => $player,
                 'totals' => $totals,
-                'heroes' => $heroes
+                'heroes' => []
             ]);
         } catch (\Exception $e) {
             $code = $e->getCode();

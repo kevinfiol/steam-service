@@ -15,8 +15,8 @@ use App\Handlers\ErrorHandler;
 return function (array $config) {
     return [
         'heroDict' => function () {
-            $heroDict = file_get_contents(__DIR__ . '/heroes.json');
-            return json_decode($heroDict, true);
+            // $heroDict = file_get_contents('/heroes.json');
+            return json_decode(['who' => 'cares'], true);
         },
 
         'GuzzleHttp\Client' => function () {
