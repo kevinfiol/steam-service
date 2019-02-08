@@ -26,8 +26,8 @@ class AppController
             $steam_id = $args['steam_id'];
 
             // If Vanity ID, resolve Steam 64 ID
-            if (!is_numeric($steam_id)) $steam_id = $this->resolveVanityUrl($steam_id);
-            $steam32_id = $this->convertId('to32', $steam_id);
+            // if (!is_numeric($steam_id)) $steam_id = $this->resolveVanityUrl($steam_id);
+            // $steam32_id = $this->convertId('to32', $steam_id);
             
             // $player = json_decode($this->dota->apiCall('players', $steam32_id), true);
             // $totals = json_decode($this->dota->apiCall('players', $steam32_id, 'totals'), true);
@@ -49,7 +49,7 @@ class AppController
             //     return array_merge($hero, $this->heroDict[$hero['hero_id']]);
             // }, $heroes);
 
-            return $res->withHeader('Content-type', 'application/json')->write(json_encode(['hello' => $steam32_id]));
+            return $res->withHeader('Content-type', 'application/json')->write(json_encode(['hello' => 'test']));
 
             // return $res->withStatuswithJson([
             //     'player' => $steam_id,
