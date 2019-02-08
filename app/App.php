@@ -5,9 +5,6 @@ namespace App;
 use Slim\App;
 use Slim\Container;
 
-error_reporting(E_ALL);
-file_put_contents("php://stderr", "hello, this is a test!\n");
-
 require_once __DIR__ . '/../vendor/autoload.php';
 
 /**

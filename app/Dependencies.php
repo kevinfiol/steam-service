@@ -15,12 +15,8 @@ use App\Handlers\ErrorHandler;
 return function (array $config) {
     return [
         'heroDict' => function () {
-            if (file_exists(__DIR__ . '/../dafta/heroes.json')) {
-                $heroDict = file_get_contents(__DIR__ . '/../data/heroes.json');
-                return json_decode($heroDict, true);
-            }
-
-            throw new \Exception('File not found.');
+            $heroDict = file_get_contents(__DIR__ . '/heroes.json');
+            return json_decode($heroDict, true);
         },
 
         'GuzzleHttp\Client' => function () {
