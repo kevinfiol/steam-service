@@ -7,6 +7,7 @@ use Slim\Container;
 
 error_reporting(E_ERROR | E_WARNING);
 require_once __DIR__ . '/../vendor/autoload.php';
+error_log("hello, this is a test!");
 
 /**
  * Resolve Configuration Variables

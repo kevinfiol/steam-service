@@ -17,7 +17,7 @@ return function (array $config) {
         'heroDict' => function () {
             if (file_exists(__DIR__ . '/../data/heroes.json')) {
                 error_log('heroes.json YES found');
-                $heroDict = file_get_contents();
+                $heroDict = file_get_contents(__DIR__ . '/../data/heroes.json');
                 return json_decode($heroDict, true);
             }
 

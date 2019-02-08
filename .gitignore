@@ -1,4 +1,5 @@
 .vscode/
 vendor/
+logs/
 app/Config.php
 yarn-error.log
