@@ -34,11 +34,16 @@ class AppController
             $totals = json_decode($this->dota->apiCall('players', $steam32_id, 'totals'), true);
             $heroes = json_decode($this->dota->apiCall('players', $steam32_id, 'heroes'), true);
 
+            $totals = array_map(function ($total) {
+                $total['field'] = $this->capitalizeWords($total['field']);
+                return $total;
+            }, $totals);
+
             // Transform Totals
-            $totals = array_reduce($totals, function ($acc, $x) {
-                $acc[ $x['field'] ] = $x;
-                return $acc;
-            }, []);
+            // $totals = array_reduce($totals, function ($acc, $x) {
+            //     $acc[ $x['field'] ] = $x;
+            //     return $acc;
+            // }, []);
 
             // Get Top 5 from $heroes
             $heroes = array_map(function ($i) use ($heroes) {
@@ -88,5 +93,18 @@ class AppController
             default:
                 return $id;
         }
+    }
+
+    private function capitalizeWords(string $words): string
+    {
+        $words = str_replace('_', ' ', $words);
+        $list = explode(' ', $words);
+
+        $list = array_map(function ($x) {
+            return ucfirst($x);
+        }, $list);
+
+        $capitalized = implode(' ', $list);
+        return $capitalized;
     }
 }
