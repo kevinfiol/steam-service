@@ -30,9 +30,12 @@ class AppController
             if (!is_numeric($steam_id)) $steam_id = $this->resolveVanityUrl($steam_id);
             $steam32_id = $this->convertId('to32', $steam_id);
             
-            $player = json_decode($this->dota->apiCall('players', $steam32_id), true);
-            $totals = json_decode($this->dota->apiCall('players', $steam32_id, 'totals'), true);
-            $heroes = json_decode($this->dota->apiCall('players', $steam32_id, 'heroes'), true);
+            $player  = json_decode($this->dota->apiCall('players', $steam32_id), true);
+            $totals  = json_decode($this->dota->apiCall('players', $steam32_id, 'totals'), true);
+            $heroes  = json_decode($this->dota->apiCall('players', $steam32_id, 'heroes'), true);
+            $winloss = json_decode($this->dota->apiCall('players', $steam32_id, 'wl'), true);
+
+            $player['wl'] = $winloss;
 
             $totals = array_map(function ($total) {
                 $total['field'] = $this->capitalizeWords($total['field']);
