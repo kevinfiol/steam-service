@@ -39,20 +39,19 @@ class AppController
                 return $total;
             }, $totals);
 
-            // Transform Totals
-            // $totals = array_reduce($totals, function ($acc, $x) {
-            //     $acc[ $x['field'] ] = $x;
-            //     return $acc;
-            // }, []);
-
             // Get Top 5 from $heroes
             $heroes = array_map(function ($i) use ($heroes) {
                 return $heroes[$i];
             }, [0, 1, 2, 3, 4]);
 
-            // Append properties from Heroes Dictionary
             $heroes = array_map(function ($hero) {
-                return array_merge($hero, $this->heroDict[$hero['hero_id']]);
+                // Append properties from Heroes Dictionary
+                $hero = array_merge($hero, $this->heroDict[$hero['hero_id']]);
+                // Append img url base
+                $hero['img']  = "https://api.opendota.com{$hero['img']}";
+                $hero['icon'] = "https://api.opendota.com{$hero['icon']}";
+
+                return $hero;
             }, $heroes);
 
             return $res->withJson([
