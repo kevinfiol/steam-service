@@ -37,10 +37,12 @@ class AppController
 
             $player['wl'] = $winloss;
 
-            $totals = array_map(function ($total) {
-                $total['field'] = $this->capitalizeWords($total['field']);
-                return $total;
-            }, $totals);
+            $totals = array_reduce($totals, function ($acc, $x) {
+                $key = $x['field'];
+                $x['field'] = $this->capitalizeWords($x['field']);
+                $acc[$key] = $x;
+                return $acc;
+            }, []);
 
             // Get Top 5 from $heroes
             $heroes = array_map(function ($i) use ($heroes) {
