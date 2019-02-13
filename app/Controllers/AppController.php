@@ -44,10 +44,10 @@ class AppController
                 return $acc;
             }, []);
 
-            // Get Top 5 from $heroes
+            // Get Top 6 from $heroes
             $heroes = array_map(function ($i) use ($heroes) {
                 return $heroes[$i];
-            }, [0, 1, 2, 3, 4]);
+            }, [0, 1, 2, 3, 4, 5]);
 
             $heroes = array_map(function ($hero) {
                 // Append properties from Heroes Dictionary
