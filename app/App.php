@@ -10,10 +10,11 @@ require_once __DIR__ . '/../vendor/autoload.php';
 /**
  * Resolve Configuration Variables
  */
-$configPath = __DIR__ . '/Config.php';
+$configPath = __DIR__ . '/../config.php';
 
 if (file_exists($configPath) && is_readable($configPath)) {
-    $config = include_once __DIR__ . '/Config.php';
+    // $config = include_once __DIR__ . '/../config.php';
+    $config = include_once $configPath;
 } else {
     $config = [
         'STEAM_API' => getenv('STEAM_API'),

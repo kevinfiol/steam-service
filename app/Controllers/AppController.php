@@ -7,18 +7,59 @@ use Slim\Http\Response;
 
 use App\Services\Steam;
 use App\Services\OpenDota;
+use App\Database\Database;
 
 class AppController
 {
     private $steam;
     private $dota;
+    private $db;
     private $heroDict;
 
-    public function __construct(Steam $steam, OpenDota $dota, array $heroDict)
+    public function __construct(Steam $steam, OpenDota $dota, Database $db, array $heroDict)
     {
         $this->steam    = $steam;
         $this->dota     = $dota;
+        $this->db       = $db;
         $this->heroDict = $heroDict;
+    }
+
+    public function getSteamAppDetails(Request $req, Response $res, array $args): Response
+    {
+        $params = $req->getQueryParams();
+
+        if (!isset($params['appids']))
+            return $res->withJson(['error' => 'no appids provided']);
+
+        $appids = $params['appids'];
+        $rows = $this->db->getRows('SteamApp', ['steam_appid' => $appids]);
+
+        if (count($rows) !== 0) {
+            $app = $rows[0]->getValues();
+            return $res->withJson($app);
+        } else {
+            $json = $this->steam->storeCall('appdetails', $params);
+            $data = json_decode($json, true)[$appids];
+            $app = $data['data'] ?? null;
+            
+            $newApp = [
+                'steam_appid'  => $app['steam_appid'],
+                'name'         => $app['name'],
+                'header_image' => $app['header_image'],
+                'is_free'      => $app['is_free'],
+                'platforms'    => json_encode($app['platforms']),
+                'categories'   => array_map(function ($c) {
+                    return $c['id'];
+                }, $app['categories'])
+            ];
+
+            $this->db->addRow('SteamApp', $newApp);
+            $foo = 5;
+        }
+
+        // $appids = $args['appids'];
+
+        // $app = $this->db->getRows('SteamApp', [])
     }
 
     public function getDotaPlayer(Request $req, Response $res, array $args): Response

@@ -1,5 +1,7 @@
 .vscode/
 vendor/
 logs/
-app/Config.php
-yarn-error.log
+cache/
+config.php
+*.db
+*.db-journal

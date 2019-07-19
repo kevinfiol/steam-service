@@ -4,6 +4,12 @@ use GuzzleHttp\Client;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+use Doctrine\Common\Cache\FilesystemCache;
+use Doctrine\ORM\Tools\Setup;
+use Doctrine\ORM\EntityManager;
+
 use App\Controllers\AppController;
 use App\Controllers\SteamController;
 use App\Controllers\OpenDotaController;
@@ -11,11 +17,12 @@ use App\Controllers\OpenDotaController;
 use App\Services\Steam;
 use App\Services\OpenDota;
 use App\Handlers\ErrorHandler;
+use App\Database\Database;
 
 return function (array $config) {
     return [
         'heroDict' => function () use ($config) {
-            $path = __DIR__ . $config['HERO_PATH'];
+            $path = $config['HERO_PATH'];
 
             if (file_exists($path) && is_readable($path)) {
                 $heroDict = file_get_contents($path);
@@ -24,6 +31,18 @@ return function (array $config) {
             } else {
                 throw new \Exception('Heroes JSON cannot be found!');
             }
+        },
+
+        'Doctrine\ORM\EntityManager' => function () use ($config) {
+            $emFactory     = include_once $config['SCRIPT_PATH'] . '/EntityManagerFactory.php';
+            $entityManager = $emFactory($config);
+            return $entityManager;
+        },
+
+        'App\Database\Database' => function ($c) {
+            $em        = $c->get('Doctrine\ORM\EntityManager');
+            $namespace = 'Entities';
+            return new Database($em, $namespace);
         },
 
         'GuzzleHttp\Client' => function () {
@@ -41,10 +60,11 @@ return function (array $config) {
         },
 
         'App\Controllers\AppController' => function ($c) {
-            $dota   = $c->get('App\Services\OpenDota');
-            $steam  = $c->get('App\Services\Steam');
+            $dota     = $c->get('App\Services\OpenDota');
+            $steam    = $c->get('App\Services\Steam');
+            $db       = $c->get('App\Database\Database');
             $heroDict = $c->get('heroDict');
-            return new AppController($steam, $dota, $heroDict);
+            return new AppController($steam, $dota, $db, $heroDict);
         },
 
         'App\Controllers\SteamController' => function ($c) {
