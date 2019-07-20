@@ -36,10 +36,12 @@ class SteamApp
         return [
             'steam_appid'  => $this->steam_appid,
             'name'         => $this->name,
-            'categories'   => $this->categories,
             'header_image' => $this->header_image,
             'is_free'      => $this->is_free,
-            'platforms'    => $this->platforms
+            'platforms'    => json_decode($this->platforms, true),
+            'categories'   => array_map(function($c) {
+                return intval($c);
+            }, $this->categories)
         ];
     }
 

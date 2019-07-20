@@ -26,6 +26,7 @@ class AppController
 
     public function getSteamAppDetails(Request $req, Response $res, array $args): Response
     {
+        $app = null;
         $params = $req->getQueryParams();
 
         if (!isset($params['appids']))
@@ -36,30 +37,55 @@ class AppController
 
         if (count($rows) !== 0) {
             $app = $rows[0]->getValues();
-            return $res->withJson($app);
         } else {
             $json = $this->steam->storeCall('appdetails', $params);
             $data = json_decode($json, true)[$appids];
-            $app = $data['data'] ?? null;
-            
-            $newApp = [
-                'steam_appid'  => $app['steam_appid'],
-                'name'         => $app['name'],
-                'header_image' => $app['header_image'],
-                'is_free'      => $app['is_free'],
-                'platforms'    => json_encode($app['platforms']),
+            $appData = $data['data'] ?? null;
+
+            $newAppRow = [
+                'steam_appid'  => $appData['steam_appid'],
+                'name'         => $appData['name'],
+                'header_image' => $appData['header_image'],
+                'is_free'      => $appData['is_free'],
+                'platforms'    => json_encode($appData['platforms']),
                 'categories'   => array_map(function ($c) {
                     return $c['id'];
-                }, $app['categories'])
+                }, $appData['categories'])
             ];
 
-            $this->db->addRow('SteamApp', $newApp);
-            $foo = 5;
+            // Add new App to Database
+            $this->db->addRow('SteamApp', $newAppRow);
+
+            // Add new Categories to Database
+            foreach ($appData['categories'] as $c) {
+                $rows = $this->db->getRows('SteamCategory', ['category_id' => $c['id']]);
+
+                if (count($rows) === 0) {
+                    // Add new Category
+                    $newCatRow = ['category_id' => $c['id'], 'description' => $c['description']];
+                    $this->db->addRow('SteamCategory', $newCatRow);
+                }
+            }
+
+            // Prepare App to return as Response to User
+            $app = $newAppRow;
+            $app['platforms'] = $appData['platforms'];
         }
 
-        // $appids = $args['appids'];
+        return $res->withJson($app);
+    }
 
-        // $app = $this->db->getRows('SteamApp', [])
+    public function getAllSteamCategories(Request $req, Response $res): Response
+    {
+        $rows = $this->db->getRows('SteamCategory', []);
+        $categories = [];
+
+        foreach ($rows as $r) {
+            $category = $r->getValues();
+            $categories[ $category['category_id'] ] = $category['description'];
+        }
+
+        return $res->withJson($categories);
     }
 
     public function getDotaPlayer(Request $req, Response $res, array $args): Response
