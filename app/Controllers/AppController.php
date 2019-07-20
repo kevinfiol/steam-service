@@ -77,7 +77,7 @@ class AppController
 
     public function getAllSteamCategories(Request $req, Response $res): Response
     {
-        $rows = $this->db->getRows('SteamCategory', []);
+        $rows = $this->db->getRows('SteamCategory');
         $categories = [];
 
         foreach ($rows as $r) {

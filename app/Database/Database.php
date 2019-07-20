@@ -15,7 +15,7 @@ class Database
         $this->namespace = $namespace;
     }
 
-    public function getRows(string $entityName, array $criteria): array
+    public function getRows(string $entityName, array $criteria = []): array
     {
         $entityClass = "{$this->namespace}\\{$entityName}";
         $rows = $this->em->getRepository($entityClass)->findBy($criteria);
