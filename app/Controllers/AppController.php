@@ -137,6 +137,48 @@ class AppController
         }
     }
 
+    public function getFriends(Request $req, Response $res): Response
+    {
+        $params = $req->getQueryParams();
+        $steamid = $params['steamid'];
+
+        if (!is_numeric($steamid))
+            $steamid = $this->resolveVanityUrl($steamid);
+
+        $apiRes = $this->steam->apiCall('ISteamUser', 'GetFriendList', 'v0001', [
+            'steamid' => $steamid,
+            'relationship' => 'friend'
+        ]);
+
+        $friendData     = json_decode($apiRes, true)['friendslist']['friends'];
+        $friendIds      = array_map(function($f) { return $f['steamid']; }, $friendData);
+        $friendIdString = implode(',', $friendIds);
+
+        $summaries = $this->getPlayerSummaries($friendIdString);
+        $friends = array_map(function ($s) {
+            return [
+                'steamid'     => $s['steamid'],
+                'personaname' => $s['personaname'],
+                'profileurl'  => $s['profileurl'],
+                'avatar'      => $s['avatarmedium'],
+            ];
+        }, $summaries);
+
+        return $res->withJson($friends);
+    }
+
+    private function getPlayerSummaries(string $steamids): array
+    {
+        $res = $this->steam->apiCall('ISteamUser', 'GetPlayerSummaries', 'v0002', [
+            'steamids' => $steamids
+        ]);
+
+        $summaries = json_decode($res, true);
+        $players = $summaries['response']['players'] ?? [];
+
+        return $players;
+    }
+
     private function resolveVanityUrl(string $steam_id): string
     {
         $res = $this->steam->apiCall('ISteamUser', 'ResolveVanityURL', 'v0001', [
