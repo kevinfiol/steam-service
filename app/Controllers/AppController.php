@@ -24,55 +24,58 @@ class AppController
         $this->heroDict = $heroDict;
     }
 
-    public function getSteamAppDetails(Request $req, Response $res, array $args): Response
+    public function getSteamAppDetails(Request $req, Response $res): Response
     {
-        $app = null;
         $params = $req->getQueryParams();
 
         if (!isset($params['appids']))
             return $res->withJson(['error' => 'no appids provided']);
 
-        $appids = $params['appids'];
-        $rows = $this->db->getRows('SteamApp', ['steam_appid' => $appids]);
+        $app = $this->getSteamApp($params);
+        return $res->withJson($app);
+    }
 
-        if (count($rows) !== 0) {
-            $app = $rows[0]->getValues();
-        } else {
-            $json = $this->steam->storeCall('appdetails', $params);
-            $data = json_decode($json, true)[$appids];
-            $appData = $data['data'] ?? null;
+    public function getCommonApps(Request $req, Response $res, array $args): Response
+    {
+        $steamids = $args['steamids'];
+        $steamids = explode(',', $steamids);
 
-            $newAppRow = [
-                'steam_appid'  => $appData['steam_appid'],
-                'name'         => $appData['name'],
-                'header_image' => $appData['header_image'],
-                'is_free'      => $appData['is_free'],
-                'platforms'    => json_encode($appData['platforms']),
-                'categories'   => array_map(function ($c) {
-                    return $c['id'];
-                }, $appData['categories'])
-            ];
+        $users = [];
+        $results = array_map(function($steamid) {
+            return $this->steam->apiCall('IPlayerService', 'GetOwnedGames', 'v0001', [
+                'steamid' => $steamid,
+                'include_appinfo' => 1,
+                'include_played_free_games' => 1
+            ]);
+        }, $steamids);
 
-            // Add new App to Database
-            $this->db->addRow('SteamApp', $newAppRow);
+        foreach ($results as $json) {
+            $data = json_decode($json, true);
+            $games = $data['response']['games'];
 
-            // Add new Categories to Database
-            foreach ($appData['categories'] as $c) {
-                $rows = $this->db->getRows('SteamCategory', ['category_id' => $c['id']]);
-
-                if (count($rows) === 0) {
-                    // Add new Category
-                    $newCatRow = ['category_id' => $c['id'], 'description' => $c['description']];
-                    $this->db->addRow('SteamCategory', $newCatRow);
-                }
-            }
-
-            // Prepare App to return as Response to User
-            $app = $newAppRow;
-            $app['platforms'] = $appData['platforms'];
+            $appids = array_map(function($g) { return strval($g['appid']); }, $games);
+            $users[] = $appids;
         }
 
-        return $res->withJson($app);
+        $first = array_pop($users);
+        $commonAppIds = array_reduce($users, function($acc, $next) {
+            return array_intersect($next, $acc);
+        }, $first);
+
+        // Retrieve Game Data
+        $commonApps = array_map(function($i) {
+            return $this->getSteamApp(['appids' => $i]);
+        }, $commonAppIds);
+
+        // Clear Empty Entires
+        $commonApps = array_filter($commonApps, function($a) {
+            return count($a) > 0;
+        });
+
+        // Reset Array
+        $commonApps = array_values($commonApps);
+
+        return $res->withJson($commonApps);
     }
 
     public function getAllSteamCategories(Request $req, Response $res): Response
@@ -165,6 +168,55 @@ class AppController
         }, $summaries);
 
         return $res->withJson($friends);
+    }
+
+    private function getSteamApp(array $params): array
+    {
+        $app    = null;
+        $appids = $params['appids'];
+        $rows   = $this->db->getRows('SteamApp', ['steam_appid' => $appids]);
+
+        if (count($rows) !== 0) {
+            $app = $rows[0]->getValues();
+        } else {
+            $json = $this->steam->storeCall('appdetails', $params);
+            $data = json_decode($json, true)[$appids];
+            $appData = $data['data'] ?? null;
+
+            if (!$appData)
+                return [];
+
+            $newAppRow = [
+                'steam_appid'  => $appData['steam_appid'],
+                'name'         => $appData['name'],
+                'header_image' => $appData['header_image'],
+                'is_free'      => $appData['is_free'],
+                'platforms'    => json_encode($appData['platforms']),
+                'categories'   => array_map(function ($c) {
+                    return $c['id'];
+                }, $appData['categories'] ?? [])
+            ];
+
+            // Add new App to Database
+            $this->db->addRow('SteamApp', $newAppRow);
+
+            // Add new Categories to Database
+            foreach ($appData['categories'] as $c) {
+                $rows = $this->db->getRows('SteamCategory', ['category_id' => $c['id']]);
+
+                if (count($rows) === 0) {
+                    // Add new Category
+                    $newCatRow = ['category_id' => $c['id'], 'description' => $c['description']];
+                    $this->db->addRow('SteamCategory', $newCatRow);
+                }
+            }
+
+            // Prepare App to return as Response to User
+            $app = $newAppRow;
+            $app['platforms'] = $appData['platforms'];
+        }
+
+        return $app;
     }
 
     private function getPlayerSummaries(string $steamids): array

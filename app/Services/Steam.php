@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Promise\PromiseInterface;
 
 class Steam
 {
@@ -24,6 +25,13 @@ class Steam
         $uri = self::API_URL . "{$iface}/{$command}/{$version}/";
         $res = $this->client->get($uri, ['query' => $params]);
         return $res->getBody()->getContents();
+    }
+
+    public function apiAsync(string $iface, string $command, string $version, array $params = []): PromiseInterface
+    {
+        $params['key'] = $this->apiKey;
+        $uri = self::API_URL . "{$iface}/{$command}/{$version}/";
+        return $this->client->getAsync($uri, ['query' => $params]);
     }
 
     public function storeCall(string $command, array $params = []): string
