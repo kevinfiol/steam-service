@@ -2,24 +2,6 @@
 
 Main Instance here: [https://steam-serv.herokuapp.com/](https://steam-serv.herokuapp.com/)
 
-The application expects a configuration file called `config.php` that should be placed in the root project directory. This config file should return a simple associative array including:
-
-* `STEAM_API` -> your Steam Web API key
-* `HERO_PATH` -> the path to heroes.json
-* `LOG_PATH`  -> your Monolog logfile path
-
-Here is a sample Config file:
-
-```php
-<?php declare(strict_types = 1);
-
-return [
-    'STEAM_API' => // Your Steam Web API key
-    'HERO_PATH' => '/../data/heroes.json',
-    'LOGS_PATH' => '/../logs/steam-service.log'
-];
-```
-
 ## Endpoints
 
 All endpoints are described in `app/Routes.php`.

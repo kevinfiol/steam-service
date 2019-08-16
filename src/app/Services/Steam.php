@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Config\Config;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
 
@@ -13,9 +14,10 @@ class Steam
     private $apiKey;
     private $client;
 
-    public function __construct(string $apiKey, Client $client)
+    public function __construct(Config $config, Client $client)
     {
-        $this->apiKey = $apiKey;
+        $appConfig = $config->get('app');
+        $this->apiKey = $appConfig['steam_api'];
         $this->client = $client;
     }
 

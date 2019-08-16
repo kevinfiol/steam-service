@@ -2,8 +2,8 @@
 
 namespace App\Controllers;
 
+use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Slim\Http\Response;
 
 use App\Services\OpenDota;
 
@@ -16,20 +16,21 @@ class OpenDotaController
         $this->dota = $dota;
     }
 
-    public function apiCall(Request $req, Response $res, array $args): Response
+    public function apiCall(Request $request, Response $response, array $args): Response
     {
-        $params = $req->getQueryParams();
-
         $interface  = $args['interface'];
         $identifier = $args['identifier'] ?? null;
         $option     = $args['option']     ?? null;
 
         try {
             $json = $this->dota->apiCall($interface, $identifier, $option);
-            return $res->withHeader('Content-type', 'application/json')->write($json);
+            $response->getBody()->write($json);
+            return $response->withHeader('Content-type', 'application/json');
         } catch (\Exception $e) {
             $code = $e->getCode();
-            return $res->withStatus($code)->withJson([ 'error' => $code ]);
+            $json = json_encode(['error' => $code]);
+            $response->getBody()->write($json);
+            return $response->withStatus($code);
         }
     }
 }

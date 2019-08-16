@@ -2,6 +2,7 @@
 
 namespace App\Database;
 
+use App\Config\Config;
 use Doctrine\ORM\EntityManager;
 
 class Database
@@ -9,10 +10,11 @@ class Database
     private $em;
     private $namespace;
 
-    public function __construct(EntityManager $em, string $namespace)
+    public function __construct(EntityManager $em, Config $config)
     {
-        $this->em        = $em;
-        $this->namespace = $namespace;
+        $this->em = $em;
+        $doctrineConfig  = $config->get('doctrine');
+        $this->namespace = $doctrineConfig['namespace'];
     }
 
     public function getRows(string $entityName, array $criteria = []): array

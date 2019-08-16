@@ -1,7 +1,6 @@
+.cache/
 .vscode/
 vendor/
-logs/
-cache/
-config.php
+/config.php
 *.db
 *.db-journal

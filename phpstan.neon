@@ -1,6 +1,0 @@
-parameters:
-    level: max
-    autoload_files:
-        - vendor/autoload.php
-    excludes_analyse:
-        - app/Templates/

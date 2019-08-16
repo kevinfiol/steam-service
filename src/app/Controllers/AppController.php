@@ -2,9 +2,10 @@
 
 namespace App\Controllers;
 
+use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Slim\Http\Response;
 
+use App\Config\Config;
 use App\Services\Steam;
 use App\Services\OpenDota;
 use App\Database\Database;
@@ -16,28 +17,44 @@ class AppController
     private $db;
     private $heroDict;
 
-    public function __construct(Steam $steam, OpenDota $dota, Database $db, array $heroDict)
+    public function __construct(Steam $steam, OpenDota $dota, Database $db, Config $config)
     {
-        $this->steam    = $steam;
-        $this->dota     = $dota;
-        $this->db       = $db;
-        $this->heroDict = $heroDict;
+        $this->steam = $steam;
+        $this->dota  = $dota;
+        $this->db    = $db;
+
+        // Load Hero Dict from Filesystem
+        $appConfig = $config->get('app');
+        $hero_path = $appConfig['hero_path'];
+
+        if (file_exists($hero_path) && is_readable($hero_path)) {
+            $contents = file_get_contents($hero_path);
+            if (!$contents) throw new \Exception('Cannot read file contents.');
+            $this->heroDict = json_decode($contents, true);
+        } else {
+            throw new \Exception('Heroes JSON cannot be found!');
+        }
     }
 
-    public function getSteamAppDetails(Request $req, Response $res): Response
+    public function getSteamAppDetails(Request $request, Response $response): Response
     {
-        $params = $req->getQueryParams();
+        $params = $request->getQueryParams();
 
-        if (!isset($params['appids']))
-            return $res->withJson(['error' => 'no appids provided']);
+        if (!isset($params['appids'])) {
+            $payload = ['error' => 'no appids provided'];
+        } else {
+            $payload = $this->getSteamApp($params);
+        }
 
-        $app = $this->getSteamApp($params);
-        return $res->withJson($app);
+        $json = json_encode($payload);
+        $response->getBody()->write($json);
+        return $response->withHeader('Content-type', 'application/json');
     }
 
-    public function getCommonApps(Request $req, Response $res, array $args): Response
+    public function getCommonApps(Request $request, Response $response): Response
     {
-        $steamids = $args['steamids'];
+        $params = $request->getQueryParams();
+        $steamids = $params['steamids'];
         $steamids = explode(',', $steamids);
 
         $users = [];
@@ -67,7 +84,7 @@ class AppController
             return $this->getSteamApp(['appids' => $i]);
         }, $commonAppIds);
 
-        // Clear Empty Entires
+        // Clear Empty Entries
         $commonApps = array_filter($commonApps, function($a) {
             return count($a) > 0;
         });
@@ -75,10 +92,17 @@ class AppController
         // Reset Array
         $commonApps = array_values($commonApps);
 
-        return $res->withJson($commonApps);
+        // Sort Apps By Name
+        usort($commonApps, function($a, $b) {
+            return strtoupper($a['name']) > strtoupper($b['name']);
+        });
+
+        $json = json_encode($commonApps);
+        $response->getBody()->write($json);
+        return $response->withHeader('Content-type', 'application/json');
     }
 
-    public function getAllSteamCategories(Request $req, Response $res): Response
+    public function getAllSteamCategories(Request $request, Response $response): Response
     {
         $rows = $this->db->getRows('SteamCategory');
         $categories = [];
@@ -88,10 +112,12 @@ class AppController
             $categories[ $category['category_id'] ] = $category['description'];
         }
 
-        return $res->withJson($categories);
+        $json = json_encode($categories);
+        $response->getBody()->write($json);
+        return $response->withHeader('Content-type', 'application/json');
     }
 
-    public function getDotaPlayer(Request $req, Response $res, array $args): Response
+    public function getDotaPlayer(Request $request, Response $response, array $args): Response
     {
         try {
             $steam_id = strval($args['steam_id']);
@@ -129,20 +155,25 @@ class AppController
                 return $hero;
             }, $heroes);
 
-            return $res->withJson([
+            $json = json_encode([
                 'player' => $player,
                 'totals' => $totals,
                 'heroes' => $heroes
             ]);
+
+            $response->getBody()->write($json);
+            return $response->withHeader('Content-type', 'application/json');
         } catch (\Exception $e) {
             $code = $e->getCode();
-            return $res->withStatus($code)->withJson(['error' => $code]);
+            $json = json_encode(['error' => $code]);
+            $response->getBody()->write($json);
+            return $response->withStatus($code);
         }
     }
 
-    public function getFriends(Request $req, Response $res): Response
+    public function getFriends(Request $request, Response $response): Response
     {
-        $params = $req->getQueryParams();
+        $params = $request->getQueryParams();
         $steamid = $params['steamid'];
 
         if (!is_numeric($steamid))
@@ -167,7 +198,28 @@ class AppController
             ];
         }, $summaries);
 
-        return $res->withJson($friends);
+        // Sort Friends By Name
+        usort($friends, function($a, $b) {
+            return strtoupper($a['personaname']) > strtoupper($b['personaname']);
+        });
+
+        $json = json_encode($friends);
+        $response->getBody()->write($json);
+        return $response->withHeader('Content-type', 'application/json');
+    }
+
+    public function getSteamID(Request $request, Response $response): Response
+    {
+        $params = $request->getQueryParams();
+        $identifier = $params['identifier'];
+
+        if (!is_numeric($identifier))
+            $steamid = $this->resolveVanityUrl($identifier);
+        else $steamid = $identifier;
+
+        $json = json_encode(['steamid' => $steamid]);
+        $response->getBody()->write($json);
+        return $response->withHeader('Content-type', 'application/json');
     }
 
     private function getSteamApp(array $params): array
