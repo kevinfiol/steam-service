@@ -27,6 +27,11 @@ foreach ($routes as $pattern => [$methods, $callable]) {
  * Middleware
  */
 /**
+ * CORS Middleware
+ */
+$app->add(new App\Middleware\CORSMiddleware());
+
+/**
  * Error Middleware
  * @param bool $displayErrorDetails -> Should be set to false in production
  * @param bool $logErrors -> Paramter is passed to the default ErrorHandler

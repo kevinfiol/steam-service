@@ -10,8 +10,8 @@
         }
     ],
     "require": {
-        "slim/slim": "^4.1",
-        "slim/psr7": "^0.4.0",
+        "slim/slim": "^4.2",
+        "slim/psr7": "^0.5.0",
         "php-di/php-di": "^6.0",
         "league/plates": "^3.3",
         "guzzlehttp/guzzle": "^6.3",

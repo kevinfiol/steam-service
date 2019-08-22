@@ -6,6 +6,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 use App\Services\OpenDota;
+use App\Utility\JSONWriter;
 
 class OpenDotaController
 {
@@ -24,13 +25,10 @@ class OpenDotaController
 
         try {
             $json = $this->dota->apiCall($interface, $identifier, $option);
-            $response->getBody()->write($json);
-            return $response->withHeader('Content-type', 'application/json');
+            return JSONWriter::writeString($response, $json);
         } catch (\Exception $e) {
             $code = $e->getCode();
-            $json = json_encode(['error' => $code]);
-            $response->getBody()->write($json);
-            return $response->withStatus($code);
+            return JSONWriter::writeArray($response, ['error' => $code]);
         }
     }
 }

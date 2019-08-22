@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d8c1ebd5a9b630007a21b68fb0a85ca6",
+    "content-hash": "793aedd2a4c3242d890cd185734950d1",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1729,24 +1729,24 @@
         },
         {
             "name": "ralouphie/getallheaders",
-            "version": "2.0.5",
+            "version": "3.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ralouphie/getallheaders.git",
-                "reference": "5601c8a83fbba7ef674a7369456d12f1e0d0eafa"
+                "reference": "120b605dfeb996808c31b6477290a714d356e822"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ralouphie/getallheaders/zipball/5601c8a83fbba7ef674a7369456d12f1e0d0eafa",
-                "reference": "5601c8a83fbba7ef674a7369456d12f1e0d0eafa",
+                "url": "https://api.github.com/repos/ralouphie/getallheaders/zipball/120b605dfeb996808c31b6477290a714d356e822",
+                "reference": "120b605dfeb996808c31b6477290a714d356e822",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3"
+                "php": ">=5.6"
             },
             "require-dev": {
-                "phpunit/phpunit": "~3.7.0",
-                "satooshi/php-coveralls": ">=1.0"
+                "php-coveralls/php-coveralls": "^2.1",
+                "phpunit/phpunit": "^5 || ^6.5"
             },
             "type": "library",
             "autoload": {
@@ -1765,28 +1765,28 @@
                 }
             ],
             "description": "A polyfill for getallheaders.",
-            "time": "2016-02-11T07:05:27+00:00"
+            "time": "2019-03-08T08:55:37+00:00"
         },
         {
             "name": "slim/psr7",
-            "version": "0.4.0",
+            "version": "0.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/slimphp/Slim-Psr7.git",
-                "reference": "d312896b7cd4aca7d4b86b64acdfcb5cc3da758f"
+                "reference": "99ad31f503584bc7c5a36cb0304120f1bce8983d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/slimphp/Slim-Psr7/zipball/d312896b7cd4aca7d4b86b64acdfcb5cc3da758f",
-                "reference": "d312896b7cd4aca7d4b86b64acdfcb5cc3da758f",
+                "url": "https://api.github.com/repos/slimphp/Slim-Psr7/zipball/99ad31f503584bc7c5a36cb0304120f1bce8983d",
+                "reference": "99ad31f503584bc7c5a36cb0304120f1bce8983d",
                 "shasum": ""
             },
             "require": {
-                "fig/http-message-util": "^1.1",
+                "fig/http-message-util": "^1.1.2",
                 "php": "^7.1",
                 "psr/http-factory": "^1.0",
                 "psr/http-message": "^1.0",
-                "ralouphie/getallheaders": "^2"
+                "ralouphie/getallheaders": "^3"
             },
             "provide": {
                 "psr/http-message-implementation": "1.0"
@@ -1838,20 +1838,20 @@
                 "psr-7",
                 "psr7"
             ],
-            "time": "2019-08-02T17:06:08+00:00"
+            "time": "2019-08-18T16:50:29+00:00"
         },
         {
             "name": "slim/slim",
-            "version": "4.1.0",
+            "version": "4.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/slimphp/Slim.git",
-                "reference": "d3c69bc624728bcdd32e836025462cfeb5311534"
+                "reference": "378abc6f8fe43dc7a73537259da728cb27a64332"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/slimphp/Slim/zipball/d3c69bc624728bcdd32e836025462cfeb5311534",
-                "reference": "d3c69bc624728bcdd32e836025462cfeb5311534",
+                "url": "https://api.github.com/repos/slimphp/Slim/zipball/378abc6f8fe43dc7a73537259da728cb27a64332",
+                "reference": "378abc6f8fe43dc7a73537259da728cb27a64332",
                 "shasum": ""
             },
             "require": {
@@ -1879,6 +1879,8 @@
                 "zendframework/zend-diactoros": "^2.1"
             },
             "suggest": {
+                "ext-simplexml": "Needed to support XML format in BodyParsingMiddleware",
+                "ext-xml": "Needed to support XML format in BodyParsingMiddleware",
                 "slim/psr7": "Slim PSR-7 implementation. See http://www.slimframework.com/docs/v4/start/installation.html for more information."
             },
             "type": "library",
@@ -1927,7 +1929,7 @@
                 "micro",
                 "router"
             ],
-            "time": "2019-08-06T20:31:05+00:00"
+            "time": "2019-08-20T19:11:25+00:00"
         },
         {
             "name": "symfony/console",
@@ -2607,19 +2609,23 @@
         },
         {
             "name": "netresearch/jsonmapper",
-            "version": "v1.5.2",
+            "version": "v1.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cweiske/jsonmapper.git",
-                "reference": "caf41ab74ac7252f5f46db6c16ab0a8358e2e55c"
+                "reference": "0d4d1b48d682a93b6bfedf60b88c7750e9cb0b06"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cweiske/jsonmapper/zipball/caf41ab74ac7252f5f46db6c16ab0a8358e2e55c",
-                "reference": "caf41ab74ac7252f5f46db6c16ab0a8358e2e55c",
+                "url": "https://api.github.com/repos/cweiske/jsonmapper/zipball/0d4d1b48d682a93b6bfedf60b88c7750e9cb0b06",
+                "reference": "0d4d1b48d682a93b6bfedf60b88c7750e9cb0b06",
                 "shasum": ""
             },
             "require": {
+                "ext-json": "*",
+                "ext-pcre": "*",
+                "ext-reflection": "*",
+                "ext-spl": "*",
                 "php": ">=5.6"
             },
             "require-dev": {
@@ -2645,7 +2651,7 @@
                 }
             ],
             "description": "Map nested JSON structures onto PHP classes",
-            "time": "2019-08-04T19:56:28+00:00"
+            "time": "2019-08-15T19:41:25+00:00"
         },
         {
             "name": "ocramius/package-versions",
@@ -4152,8 +4158,8 @@
             "authors": [
                 {
                     "name": "Arne Blankerts",
-                    "email": "arne@blankerts.de",
-                    "role": "Developer"
+                    "role": "Developer",
+                    "email": "arne@blankerts.de"
                 }
             ],
             "description": "A small library for converting tokenized PHP source code into XML and potentially other formats",
@@ -4161,16 +4167,16 @@
         },
         {
             "name": "vimeo/psalm",
-            "version": "3.4.11",
+            "version": "3.4.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vimeo/psalm.git",
-                "reference": "85c9b6bb442039c773120059ae35a31f8ef9d488"
+                "reference": "86e5e50c1bb492045e70f2ebe1da3cad06e4e9b2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vimeo/psalm/zipball/85c9b6bb442039c773120059ae35a31f8ef9d488",
-                "reference": "85c9b6bb442039c773120059ae35a31f8ef9d488",
+                "url": "https://api.github.com/repos/vimeo/psalm/zipball/86e5e50c1bb492045e70f2ebe1da3cad06e4e9b2",
+                "reference": "86e5e50c1bb492045e70f2ebe1da3cad06e4e9b2",
                 "shasum": ""
             },
             "require": {
@@ -4244,7 +4250,7 @@
                 "inspection",
                 "php"
             ],
-            "time": "2019-08-09T15:40:46+00:00"
+            "time": "2019-08-20T18:26:32+00:00"
         },
         {
             "name": "webmozart/assert",

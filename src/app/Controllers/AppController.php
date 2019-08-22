@@ -9,6 +9,7 @@ use App\Config\Config;
 use App\Services\Steam;
 use App\Services\OpenDota;
 use App\Database\Database;
+use App\Utility\JSONWriter;
 
 class AppController
 {
@@ -46,9 +47,7 @@ class AppController
             $payload = $this->getSteamApp($params);
         }
 
-        $json = json_encode($payload);
-        $response->getBody()->write($json);
-        return $response->withHeader('Content-type', 'application/json');
+        return JSONWriter::writeArray($response, $payload);
     }
 
     public function getCommonApps(Request $request, Response $response): Response
@@ -79,27 +78,34 @@ class AppController
             return array_intersect($next, $acc);
         }, $first);
 
-        // Retrieve Game Data
-        $commonApps = array_map(function($i) {
-            return $this->getSteamApp(['appids' => $i]);
-        }, $commonAppIds);
+        $rows = $this->db->getRows('SteamApp', ['steam_appid' => $commonAppIds]);
+        $appsFromDb = array_map(function($r) { return $r->getValues(); }, $rows);
+        
+        $idsFromDb  = array_map(function($a) { return strval($a['steam_appid']); }, $appsFromDb);
+        $appIdsToFetch = array_diff($commonAppIds, $idsFromDb);
 
-        // Clear Empty Entries
-        $commonApps = array_filter($commonApps, function($a) {
-            return count($a) > 0;
-        });
+        if (count($appIdsToFetch) > 0) {
+            // Fetch unfetched Game Data
+            $fetchedApps = array_map(function($i) {
+                return $this->getSteamApp(['appids' => $i]);
+            }, $appIdsToFetch);
 
-        // Reset Array
-        $commonApps = array_values($commonApps);
+            // Clear Empty Entries
+            $fetchedApps = array_filter($fetchedApps, function($a) {
+                return count($a) > 0;
+            });
+        } else {
+            $fetchedApps = [];
+        }
+
+        $commonApps = array_merge($appsFromDb, $fetchedApps);
 
         // Sort Apps By Name
         usort($commonApps, function($a, $b) {
             return strtoupper($a['name']) > strtoupper($b['name']);
         });
 
-        $json = json_encode($commonApps);
-        $response->getBody()->write($json);
-        return $response->withHeader('Content-type', 'application/json');
+        return JSONWriter::writeArray($response, $commonApps);
     }
 
     public function getAllSteamCategories(Request $request, Response $response): Response
@@ -112,9 +118,7 @@ class AppController
             $categories[ $category['category_id'] ] = $category['description'];
         }
 
-        $json = json_encode($categories);
-        $response->getBody()->write($json);
-        return $response->withHeader('Content-type', 'application/json');
+        return JSONWriter::writeArray($response, $categories);
     }
 
     public function getDotaPlayer(Request $request, Response $response, array $args): Response
@@ -155,19 +159,15 @@ class AppController
                 return $hero;
             }, $heroes);
 
-            $json = json_encode([
+
+            return JSONWriter::writeArray($response, [
                 'player' => $player,
                 'totals' => $totals,
                 'heroes' => $heroes
             ]);
-
-            $response->getBody()->write($json);
-            return $response->withHeader('Content-type', 'application/json');
         } catch (\Exception $e) {
             $code = $e->getCode();
-            $json = json_encode(['error' => $code]);
-            $response->getBody()->write($json);
-            return $response->withStatus($code);
+            return JSONWriter::writeArray($response, ['error' => $code]);
         }
     }
 
@@ -203,9 +203,7 @@ class AppController
             return strtoupper($a['personaname']) > strtoupper($b['personaname']);
         });
 
-        $json = json_encode($friends);
-        $response->getBody()->write($json);
-        return $response->withHeader('Content-type', 'application/json');
+        return JSONWriter::writeArray($response, $friends);
     }
 
     public function getSteamID(Request $request, Response $response): Response
@@ -215,58 +213,58 @@ class AppController
 
         if (!is_numeric($identifier))
             $steamid = $this->resolveVanityUrl($identifier);
-        else $steamid = $identifier;
+        else
+            $steamid = $identifier;
 
-        $json = json_encode(['steamid' => $steamid]);
-        $response->getBody()->write($json);
-        return $response->withHeader('Content-type', 'application/json');
+        return JSONWriter::writeArray($response, ['steamid' => $steamid]);
     }
 
     private function getSteamApp(array $params): array
     {
         $app    = null;
         $appids = $params['appids'];
-        $rows   = $this->db->getRows('SteamApp', ['steam_appid' => $appids]);
 
-        if (count($rows) !== 0) {
-            $app = $rows[0]->getValues();
-        } else {
-            $json = $this->steam->storeCall('appdetails', $params);
-            $data = json_decode($json, true)[$appids];
-            $appData = $data['data'] ?? null;
+        // Retrieve Data from Store API
+        $json = $this->steam->storeCall('appdetails', $params);
+        $data = json_decode($json, true)[$appids];
+        $appData = $data['data'] ?? null;
 
-            if (!$appData)
-                return [];
-
-            $newAppRow = [
-                'steam_appid'  => $appData['steam_appid'],
-                'name'         => $appData['name'],
-                'header_image' => $appData['header_image'],
-                'is_free'      => $appData['is_free'],
-                'platforms'    => json_encode($appData['platforms']),
-                'categories'   => array_map(function ($c) {
-                    return $c['id'];
-                }, $appData['categories'] ?? [])
-            ];
-
-            // Add new App to Database
-            $this->db->addRow('SteamApp', $newAppRow);
-
-            // Add new Categories to Database
-            foreach ($appData['categories'] as $c) {
-                $rows = $this->db->getRows('SteamCategory', ['category_id' => $c['id']]);
-
-                if (count($rows) === 0) {
-                    // Add new Category
-                    $newCatRow = ['category_id' => $c['id'], 'description' => $c['description']];
-                    $this->db->addRow('SteamCategory', $newCatRow);
-                }
-            }
-
-            // Prepare App to return as Response to User
-            $app = $newAppRow;
-            $app['platforms'] = $appData['platforms'];
+        // If null, or steam_appid mismatch, return empty object
+        if (!$appData || $appids != $appData['steam_appid']) {
+            return [];
         }
+
+        // Create new App
+        $newAppRow = [
+            'steam_appid'  => $appData['steam_appid'],
+            'name'         => $appData['name'],
+            'header_image' => $appData['header_image'],
+            'is_free'      => $appData['is_free'],
+            'platforms'    => json_encode($appData['platforms']),
+            'categories'   => array_map(function ($c) {
+                return $c['id'];
+            }, $appData['categories'] ?? [])
+        ];
+
+        // Add new App to Database
+        $this->db->addRow('SteamApp', $newAppRow);
+
+        // Add new Categories to Database
+        foreach ($appData['categories'] as $c) {
+            $rows = $this->db->getRows('SteamCategory', ['category_id' => $c['id']]);
+
+            if (count($rows) === 0) {
+                // Add new Category
+                $newCatRow = ['category_id' => $c['id'], 'description' => $c['description']];
+                $this->db->addRow('SteamCategory', $newCatRow);
+            }
+        }
+
+        // Prepare App to return as Response to User
+        $app = $newAppRow;
+
+        // revert platforms back to assoc array instead of json string
+        $app['platforms'] = $appData['platforms'];
 
         return $app;
     }
