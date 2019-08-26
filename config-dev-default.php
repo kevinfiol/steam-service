@@ -4,7 +4,7 @@ return [
     'app' => [
         'templates_path' => __DIR__ . '/src/Templates/',
         'hero_path'      => __DIR__ . '/src/data/heroes.json',
-        'steam_api'      => 'STEAM_API_KEY_GOES_HERE'
+        'steam_api'      => 'YOUR_STEAM_API_KEY_GOES_HERE'
     ],
     'doctrine' => [
         'namespace'  => 'Entities',

@@ -8,7 +8,13 @@ require __DIR__ . '/../../vendor/autoload.php';
 /**
  * Configurations
  */
-$config = include_once __DIR__ . '/../../config.php';
+$production = getenv('IS_PROD') ?? false;
+
+if ($production) {
+    $config = include_once __DIR__ . '/../../config-prod.php';
+} else {
+    $config = include_once __DIR__ . '/../../config-dev.php';
+}
 
 /**
  * PHP Definitions
