@@ -12,13 +12,13 @@ $app_env = getenv('APP_ENV') ?? 'dev';
 
 switch ($app_env) {
     case 'prod':
-        $configArray = include_once __DIR__ . '/config-prod.php';
+        $config = include_once __DIR__ . '/../../config-prod.php';
         break;
     case 'dev':
-        $configArray = include_once __DIR__ . '/config-dev.php';
+        $config = include_once __DIR__ . '/../../config-dev.php';
         break;
     default:
-        $configArray = include_once __DIR__ . '/config-dev.php';
+        $config = include_once __DIR__ . '/../../config-dev.php';
 }
 
 /**

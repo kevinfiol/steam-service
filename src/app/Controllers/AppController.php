@@ -44,7 +44,15 @@ class AppController
         if (!isset($params['appids'])) {
             $payload = ['error' => 'no appids provided'];
         } else {
-            $payload = $this->getSteamApp($params);
+            $appids = $params['appids'];
+            $rows = $this->db->getRows('SteamApp', ['steam_appid' => $appids]);
+
+            if (count($rows) > 0) {
+                $steam_app = $rows[0]->getValues();
+                $payload = $steam_app;
+            } else {
+                $payload = $this->getSteamApp($params);
+            }
         }
 
         return JSONWriter::writeArray($response, $payload);
@@ -321,17 +329,5 @@ class AppController
 
         $capitalized = implode(' ', $list);
         return $capitalized;
-    }
-
-    public function test(Request $request, Response $response): Response
-    {
-        $response->getBody()->write('hello test');
-        return $response;
-    }
-
-    public function foo(Request $request, Response $response): Response
-    {
-        $response->getBody()->write('hello foo');
-        return $response;
     }
 }
