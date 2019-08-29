@@ -6,16 +6,20 @@ use Scripts\EntityManagerFactory;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-$production = getenv('IS_PROD') ?? false;
+$app_env = getenv('APP_ENV') ?? 'dev';
 
-if ($production) {
-    $configArray = include_once __DIR__ . '/config-prod.php';
-} else {
-    $configArray = include_once __DIR__ . '/config-dev.php';
+switch ($app_env) {
+    case 'prod':
+        $configArray = include_once __DIR__ . '/config-prod.php';
+        break;
+    case 'dev':
+        $configArray = include_once __DIR__ . '/config-dev.php';
+        break;
+    default:
+        $configArray = include_once __DIR__ . '/config-dev.php';
 }
 
 $config = new Config($configArray);
-
 $factory = new EntityManagerFactory($config);
 $entityManager = $factory->createEntityManager();
 

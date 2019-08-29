@@ -8,12 +8,17 @@ require __DIR__ . '/../../vendor/autoload.php';
 /**
  * Configurations
  */
-$production = getenv('IS_PROD') ?? false;
+$app_env = getenv('APP_ENV') ?? 'dev';
 
-if ($production) {
-    $config = include_once __DIR__ . '/../../config-prod.php';
-} else {
-    $config = include_once __DIR__ . '/../../config-dev.php';
+switch ($app_env) {
+    case 'prod':
+        $configArray = include_once __DIR__ . '/config-prod.php';
+        break;
+    case 'dev':
+        $configArray = include_once __DIR__ . '/config-dev.php';
+        break;
+    default:
+        $configArray = include_once __DIR__ . '/config-dev.php';
 }
 
 /**
