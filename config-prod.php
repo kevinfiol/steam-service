@@ -15,7 +15,6 @@ return [
         'cache'      => __DIR__ . '/.cache',
         'connection' => [
             'driver'   => 'pdo_pgsql',
-            'dbname'   => $db['path'],
             'user'     => $db['user'],
             'password' => $db['pass'],
             'host'     => $db['host'],
