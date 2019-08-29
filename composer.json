@@ -16,6 +16,7 @@
         "league/plates": "^3.3",
         "guzzlehttp/guzzle": "^6.3",
         "ext-bcmath": "^7.3",
+        "ext-mbstring": "*",
         "doctrine/orm": "^2.6"
     },
     "require-dev": {
