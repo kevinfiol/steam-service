@@ -1,6 +1,9 @@
 <?php declare(strict_types = 1);
 
 return [
+    '/test' => [['GET'], 'App\Controllers\AppController:test'],
+    '/foo//' => [['GET'], 'App\Controllers\AppController:foo'],
+
     /** Steam Endpoints */
     '/steamAPI/{iface}/{command}/{version}/' => [['GET'], 'App\Controllers\SteamController:apiCall'],
     '/storeAPI/{command}/'                   => [['GET'], 'App\Controllers\SteamController:storeCall'],

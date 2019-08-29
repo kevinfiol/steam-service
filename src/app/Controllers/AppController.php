@@ -322,4 +322,16 @@ class AppController
         $capitalized = implode(' ', $list);
         return $capitalized;
     }
+
+    public function test(Request $request, Response $response): Response
+    {
+        $response->getBody()->write('hello test');
+        return $response;
+    }
+
+    public function foo(Request $request, Response $response): Response
+    {
+        $response->getBody()->write('hello foo');
+        return $response;
+    }
 }
