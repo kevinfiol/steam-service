@@ -29,7 +29,7 @@ foreach ($routes as $pattern => [$methods, $callable]) {
 /**
  * CORS Middleware
  */
-// $app->add(new App\Middleware\CORSMiddleware());
+$app->add(new App\Middleware\CORSMiddleware());
 
 /**
  * Error Middleware
