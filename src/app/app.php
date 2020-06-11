@@ -52,7 +52,7 @@ $defaultHandler = function(
 
     $response = $app->getResponseFactory()->createResponse();
     $response->getBody()->write($json);
-    return $response->withStatus($status)->withHeader('Content-type', 'application/json');
+    return $response->withHeader('Content-type', 'application/json');
 };
 
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);

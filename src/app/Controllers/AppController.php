@@ -301,6 +301,8 @@ class AppController
             return $res['response']['steamid'];
         }
 
+        // The reason you just returned instead of throwing an Exception is because
+        // what if the user has a vanityURL that is 17 digits?
         return $steam_id;
     }
 
