@@ -37,6 +37,11 @@ class AppController
         }
     }
 
+    public function serverWakeup(Request $request, Response $response): Response
+    {
+        return JSONWriter::writeArray($response, ['message' => 'OK']);
+    }
+
     public function getSteamAppDetails(Request $request, Response $response): Response
     {
         $params = $request->getQueryParams();
