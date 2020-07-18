@@ -199,8 +199,8 @@ class AppController
             'relationship' => 'friend'
         ]);
 
-        $friendData     = json_decode($apiRes, true)['friendslist']['friends'];
-        $friendIds      = array_map(function($f) { return $f['steamid']; }, $friendData);
+        $friendData = json_decode($apiRes, true)['friendslist']['friends'];
+        $friendIds = array_map(function($f) { return $f['steamid']; }, $friendData);
 
         $allIds = [$steamid, ...$friendIds];
         $idString = implode(',', $allIds);
