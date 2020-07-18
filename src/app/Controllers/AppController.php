@@ -184,6 +184,54 @@ class AppController
         }
     }
 
+    public function getAllProfiles(Request $request, Response $response): Response
+    {
+        // similar to getFriends;
+        // made for sfn-remake; intention is to reduce calls to getPlayersSummaries
+        $params = $request->getQueryParams();
+        $steamid = $params['steamid'];
+
+        if (!is_numeric($steamid))
+            $steamid = $this->resolveVanityUrl($steamid);
+
+        $apiRes = $this->steam->apiCall('ISteamUser', 'GetFriendList', 'v0001', [
+            'steamid' => $steamid,
+            'relationship' => 'friend'
+        ]);
+
+        $friendData     = json_decode($apiRes, true)['friendslist']['friends'];
+        $friendIds      = array_map(function($f) { return $f['steamid']; }, $friendData);
+
+        $allIds = [$steamid, ...$friendIds];
+        $idString = implode(',', $allIds);
+
+        $summaries = $this->getPlayerSummaries($idString);
+        $profiles = array_map(function ($s) {
+            return [
+                'steamid'     => $s['steamid'],
+                'personaname' => $s['personaname'],
+                'profileurl'  => $s['profileurl'],
+                'avatar'      => $s['avatarmedium'],
+            ];
+        }, $summaries);
+
+        // split the user's profile from their friends' profiles
+        $index = array_search($steamid, array_column($profiles, 'steamid'));
+        $userProfile = array_splice($profiles, $index, 1);
+
+        // sort friend profiles by name
+        usort($profiles, function($a, $b) {
+            return strtoupper($a['personaname']) > strtoupper($b['personaname']);
+        });
+
+        $allProfiles = [
+            'user' => $userProfile[0],
+            'friends' => $profiles
+        ];
+
+        return JSONWriter::writeArray($response, $allProfiles);
+    }
+
     public function getFriends(Request $request, Response $response): Response
     {
         $params = $request->getQueryParams();
