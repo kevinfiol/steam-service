@@ -225,6 +225,7 @@ class AppController
         });
 
         $allProfiles = [
+            'idString' => $idString,
             'user' => $userProfile[0],
             'friends' => $profiles
         ];
