@@ -216,6 +216,7 @@ class AppController
         }, $summaries);
 
         // split the user's profile from their friends' profiles
+        // array_splice mutates $profiles
         $index = array_search($steamid, array_column($profiles, 'steamid'));
         $userProfile = array_splice($profiles, $index, 1);
 
