@@ -51,10 +51,9 @@ $defaultHandler = function(
     $payload = ['error' => true, 'message' => $exception->getMessage()];
     $status = $exception->getCode();
     $json = json_encode($payload);
-
     $response = $app->getResponseFactory()->createResponse();
     $response->getBody()->write($json);
-    return $response->withHeader('Content-type', 'application/json')->withStatus($status);
+    return $response->withHeader('Content-type', 'application/json')->withStatus($status < 400 ? 400 : $status);
 };
 
 $errorMiddleware = $app->addErrorMiddleware($app_env == 'dev', true, true);

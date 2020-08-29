@@ -25,7 +25,13 @@ class Steam
     {
         $params['key'] = $this->apiKey;
         $uri = self::API_URL . "{$iface}/{$command}/{$version}/";
-        $res = $this->client->get($uri, ['query' => $params]);
+
+        try {
+            $res = $this->client->get($uri, ['query' => $params]);
+        } catch(\Exception $e) {
+            throw new \Exception('WEB API ERROR', $e->getCode());
+        }
+
         return $res->getBody()->getContents();
     }
 
@@ -39,7 +45,13 @@ class Steam
     public function storeCall(string $command, array $params = []): string
     {
         $uri = self::STORE_URL . "{$command}/";
-        $res = $this->client->get($uri, ['query' => $params]);
+
+        try {
+            $res = $this->client->get($uri, ['query' => $params]);
+        } catch(\Exception $e) {
+            throw new \Exception('STORE API ERROR', $e->getCode());
+        }
+
         return $res->getBody()->getContents();
     }
 }
