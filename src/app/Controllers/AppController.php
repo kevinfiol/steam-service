@@ -33,7 +33,7 @@ class AppController
             if (!$contents) throw new \Exception('Cannot read file contents.');
             $this->heroDict = json_decode($contents, true);
         } else {
-            throw new \Exception('Heroes JSON cannot be found!');
+            throw new \Exception('Heroes JSON cannot be found!', 200);
         }
     }
 
@@ -70,13 +70,18 @@ class AppController
         $steamids = explode(',', $steamids);
 
         $users = [];
-        $results = array_map(function($steamid) {
-            return $this->steam->apiCall('IPlayerService', 'GetOwnedGames', 'v0001', [
-                'steamid' => $steamid,
-                'include_appinfo' => 1,
-                'include_played_free_games' => 1
-            ]);
-        }, $steamids);
+
+        try {
+            $results = array_map(function($steamid) {
+                return $this->steam->apiCall('IPlayerService', 'GetOwnedGames', 'v0001', [
+                    'steamid' => $steamid,
+                    'include_appinfo' => 1,
+                    'include_played_free_games' => 1
+                ]);
+            }, $steamids);
+        } catch(\Exception $e) {
+            throw new \Exception('Could not retrieve commonApps.', $e->getCode());
+        }
 
         foreach ($results as $json) {
             $data = json_decode($json, true);
@@ -179,8 +184,7 @@ class AppController
                 'heroes' => $heroes
             ]);
         } catch (\Exception $e) {
-            $code = $e->getCode();
-            return JSONWriter::writeArray($response, ['error' => $code]);
+            throw new \Exception('Could not retrieve given DOTA Player.', $e->getCode());
         }
     }
 
@@ -194,10 +198,14 @@ class AppController
         if (!is_numeric($steamid))
             $steamid = $this->resolveVanityUrl($steamid);
 
-        $apiRes = $this->steam->apiCall('ISteamUser', 'GetFriendList', 'v0001', [
-            'steamid' => $steamid,
-            'relationship' => 'friend'
-        ]);
+        try {
+            $apiRes = $this->steam->apiCall('ISteamUser', 'GetFriendList', 'v0001', [
+                'steamid' => $steamid,
+                'relationship' => 'friend'
+            ]);
+        } catch(\Exception $e) {
+            throw new \Exception('Could not retrieve profiles. Maybe set to private?', $e->getCode());
+        }
 
         $friendData = json_decode($apiRes, true)['friendslist']['friends'];
         $friendIds = array_map(function($f) { return $f['steamid']; }, $friendData);
@@ -212,6 +220,7 @@ class AppController
                 'personaname' => $s['personaname'],
                 'profileurl'  => $s['profileurl'],
                 'avatar'      => $s['avatarmedium'],
+                'visible'     => $s['communityvisibilitystate'] == 3 ? true : false
             ];
         }, $summaries);
 
@@ -242,10 +251,14 @@ class AppController
         if (!is_numeric($steamid))
             $steamid = $this->resolveVanityUrl($steamid);
 
-        $apiRes = $this->steam->apiCall('ISteamUser', 'GetFriendList', 'v0001', [
-            'steamid' => $steamid,
-            'relationship' => 'friend'
-        ]);
+        try {
+            $apiRes = $this->steam->apiCall('ISteamUser', 'GetFriendList', 'v0001', [
+                'steamid' => $steamid,
+                'relationship' => 'friend'
+            ]);
+        } catch(\Exception $e) {
+            throw new \Exception('Could not retrieve profiles. Maybe set to private?', $e->getCode());
+        }
 
         $friendData     = json_decode($apiRes, true)['friendslist']['friends'];
         $friendIds      = array_map(function($f) { return $f['steamid']; }, $friendData);
@@ -288,7 +301,12 @@ class AppController
         $appids = $params['appids'];
 
         // Retrieve Data from Store API
-        $json = $this->steam->storeCall('appdetails', $params);
+        try {
+            $json = $this->steam->storeCall('appdetails', $params);
+        } catch(\Exception $e) {
+            throw new \Exception('Could not retrieve store app details.', $e->getCode());
+        }
+
         $data = json_decode($json, true)[$appids];
         $appData = $data['data'] ?? null;
 
@@ -334,9 +352,13 @@ class AppController
 
     private function getPlayerSummaries(string $steamids): array
     {
-        $res = $this->steam->apiCall('ISteamUser', 'GetPlayerSummaries', 'v0002', [
-            'steamids' => $steamids
-        ]);
+        try {
+            $res = $this->steam->apiCall('ISteamUser', 'GetPlayerSummaries', 'v0002', [
+                'steamids' => $steamids
+            ]);
+        } catch(\Exception $e) {
+            throw new \Exception('Could not retrieve player summaries.', $e->getCode());
+        }
 
         $summaries = json_decode($res, true);
         $players = $summaries['response']['players'] ?? [];
@@ -346,9 +368,13 @@ class AppController
 
     private function resolveVanityUrl(string $steam_id): string
     {
-        $res = $this->steam->apiCall('ISteamUser', 'ResolveVanityURL', 'v0001', [
-            'vanityurl' => $steam_id
-        ]);
+        try {
+            $res = $this->steam->apiCall('ISteamUser', 'ResolveVanityURL', 'v0001', [
+                'vanityurl' => $steam_id
+            ]);
+        } catch(\Exception $e) {
+            throw new \Exception('Could not resolve vanity url.', $e->getCode());
+        }
 
         $res = json_decode($res, true);
 
