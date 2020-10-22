@@ -4,7 +4,7 @@ Main Instance here: [https://steam-serv.herokuapp.com/](https://steam-serv.herok
 
 ## Endpoints
 
-All endpoints are described in `app/Routes.php`.
+All endpoints are described in `src/app/routes.php`.
 
 ### Steam Web API
 
